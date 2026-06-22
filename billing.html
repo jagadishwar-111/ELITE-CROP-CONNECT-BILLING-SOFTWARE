@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Crop Connect LLP Billing Software</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 antialiased min-h-screen flex flex-col">
+
+    <nav class="bg-emerald-800 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center space-x-3">
+                <span class="font-bold text-xl tracking-wide">ELITE CROP CONNECT LLP</span>
+                <span class="bg-emerald-600 text-xs px-2 py-1 rounded font-semibold tracking-wider">EXPORT SYSTEM</span>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-4 text-sm text-emerald-100">
+                <span class="flex items-center gap-1">✉️ info@elitecropconnect.com</span>
+                <span class="flex items-center gap-1">🌐 elitecropconnect.com</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+        
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2 flex items-center gap-2 text-emerald-800">
+                🏢 Step 1: Client & Document Type
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Company Dealing With (Buyer / Client Name) *</label>
+                    <input type="text" id="dealingCompany" placeholder="e.g., Global ImpEx Inc." class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Select Action / Document Type *</label>
+                    <select id="documentType" onchange="handleDocTypeChange()" class="w-full border border-gray-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
+                        <option value="">-- Choose an option --</option>
+                        <option value="Proforma Invoice">Generate Proforma Invoice</option>
+                        <option value="Commercial Invoice">Generate Commercial Invoice</option>
+                        <option value="Packing List">Generate Export Packing List</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section id="formWorkspace" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hidden">
+            <h2 id="workspaceTitle" class="text-lg font-bold text-gray-900 mb-4 border-b pb-2 text-emerald-800">✍️ Document Details</h2>
+            
+            <form id="billingForm" onsubmit="saveDocument(event)">
+                <input type="hidden" id="editIndex" value="">
+
+                <div id="proformaFields" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Document / Reference Number *</label>
+                        <input type="text" id="invoiceNum" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Date *</label>
+                        <input type="date" id="invoiceDate" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Currency *</label>
+                        <select id="currency" required class="w-full border border-gray-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="INR">INR - Indian Rupee</option>
+                            <option value="AED">AED - UAE Dirham</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="SAR">SAR - Saudi Riyal</option>
+                            <option value="GBP">GBP - British Pound</option>
+                            <option value="SGD">SGD - Singapore Dollar</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Incoterms *</label>
+                        <select id="incoterm" required class="w-full border border-gray-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="FOB">FOB - Free On Board</option>
+                            <option value="CIF">CIF - Cost, Insurance & Freight</option>
+                            <option value="CFR">CFR - Cost & Freight</option>
+                            <option value="EXW">EXW - Ex Works</option>
+                            <option value="DAP">DAP - Delivered At Place</option>
+                            <option value="DDP">DDP - Delivered Duty Paid</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Port of Loading *</label>
+                        <input type="text" id="portLoading" placeholder="e.g., Nhava Sheva Port, India" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Port of Discharge *</label>
+                        <input type="text" id="portDischarge" placeholder="e.g., Port of New York, USA" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-700 mb-3 flex items-center gap-1">📦 Commodity Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Description of Goods *</label>
+                            <input type="text" id="itemDesc" placeholder="e.g., Tamarind Seeds (Packed in 50kg Jute Bags)" required class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Unit Metric Type *</label>
+                            <select id="itemUnit" required class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="MT">MT (Metric Tons)</option>
+                                <option value="Kgs">Kgs (Kilograms)</option>
+                                <option value="Quintals">Quintals</option>
+                                <option value="Bags">Bags</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Total Quantity *</label>
+                            <input type="number" step="any" id="itemQty" placeholder="e.g., 26" required class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div id="rateFieldContainer">
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Rate per Unit *</label>
+                            <input type="number" step="any" id="itemRate" placeholder="Rate Price" class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="resetFormWorkspace()" class="px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 bg-emerald-700 text-white font-medium rounded-lg hover:bg-emerald-800 transition shadow-sm">💾 Save Record</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2 flex items-center gap-2 text-emerald-800">
+                📊 Document Management Console
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold uppercase text-gray-600 tracking-wider">
+                            <th class="p-3">Ref No.</th>
+                            <th class="p-3">Type</th>
+                            <th class="p-3">Client Company</th>
+                            <th class="p-3">Date</th>
+                            <th class="p-3">Calculation metrics</th>
+                            <th class="p-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="documentTableBody" class="divide-y divide-gray-100 text-sm">
+                        </tbody>
+                </table>
+                <div id="noRecordsMsg" class="text-center py-8 text-gray-400 hidden">
+                    No active trade files found in this dynamic tracking log. Change options above to start.
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let dbRecords = JSON.parse(localStorage.getItem('ecc_billing_db')) || [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTableRecords();
+        });
+
+        function handleDocTypeChange() {
+            const docType = document.getElementById('documentType').value;
+            const contextCompany = document.getElementById('dealingCompany').value.trim();
+            const workspace = document.getElementById('formWorkspace');
+            const workspaceTitle = document.getElementById('workspaceTitle');
+            const rateInput = document.getElementById('itemRate');
+
+            if (!contextCompany) {
+                alert("Please declare the Buyer/Client Company Name first before managing document structures.");
+                document.getElementById('documentType').value = "";
+                return;
+            }
+
+            if (!docType) {
+                workspace.classList.add('hidden');
+                return;
+            }
+
+            workspace.classList.remove('hidden');
+            workspaceTitle.innerText = `✍️ Data Formulation Layer: ${docType}`;
+            
+            if (docType === "Packing List") {
+                rateInput.value = "0";
+                rateInput.disabled = true;
+                rateInput.required = false;
+                document.getElementById('rateFieldContainer').style.opacity = "0.4";
+            } else {
+                rateInput.disabled = false;
+                rateInput.required = true;
+                document.getElementById('rateFieldContainer').style.opacity = "1";
+            }
+        }
+
+        function saveDocument(e) {
+            e.preventDefault();
+            
+            const company = document.getElementById('dealingCompany').value.trim();
+            const type = document.getElementById('documentType').value;
+            const invNum = document.getElementById('invoiceNum').value.trim();
+            const date = document.getElementById('invoiceDate').value;
+            const currency = document.getElementById('currency').value;
+            const incoterm = document.getElementById('incoterm').value;
+            const portLoad = document.getElementById('portLoading').value.trim();
+            const portDis = document.getElementById('portDischarge').value.trim();
+            const desc = document.getElementById('itemDesc').value.trim();
+            const unit = document.getElementById('itemUnit').value;
+            const qty = parseFloat(document.getElementById('itemQty').value) || 0;
+            const rate = parseFloat(document.getElementById('itemRate').value) || 0;
+            const total = qty * rate;
+
+            const recordData = { company, type, invNum, date, currency, incoterm, portLoad, portDis, desc, unit, qty, rate, total };
+            const editIndexVal = document.getElementById('editIndex').value;
+
+            if (editIndexVal !== "") {
+                dbRecords[parseInt(editIndexVal)] = recordData;
+            } else {
+                dbRecords.push(recordData);
+            }
+
+            localStorage.setItem('ecc_billing_db', JSON.stringify(dbRecords));
+            resetFormWorkspace();
+            renderTableRecords();
+        }
+
+        function renderTableRecords() {
+            const tbody = document.getElementById('documentTableBody');
+            const noRecordsMsg = document.getElementById('noRecordsMsg');
+            tbody.innerHTML = "";
+
+            if (dbRecords.length === 0) {
+                noRecordsMsg.classList.remove('hidden');
+                return;
+            }
+            noRecordsMsg.classList.add('hidden');
+
+            dbRecords.forEach((record, index) => {
+                const displayVal = record.type === "Packing List" ? `${record.qty} ${record.unit}` : `${record.currency} ${record.total.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50/70 transition";
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-gray-900">${record.invNum}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-emerald-50 text-emerald-800 border border-emerald-100">${record.type}</span></td>
+                    <td class="p-3 font-medium text-gray-700">${record.company}</td>
+                    <td class="p-3 text-gray-500">${record.date}</td>
+                    <td class="p-3 font-bold text-gray-900">${displayVal}</td>
+                    <td class="p-3 text-right space-x-1 whitespace-nowrap">
+                        <button onclick="loadRecordForEdit(${index})" class="text-xs bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 px-2.5 py-1 rounded font-medium transition">✏️ Edit</button>
+                        <button onclick="downloadPrintDocument(${index})" class="text-xs bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 px-2.5 py-1 rounded font-medium transition">📥 Download</button>
+                        <button onclick="deleteRecord(${index})" class="text-xs bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 px-2.5 py-1 rounded font-medium transition">❌ Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function loadRecordForEdit(index) {
+            const record = dbRecords[index];
+            document.getElementById('dealingCompany').value = record.company;
+            document.getElementById('documentType').value = record.type;
+            handleDocTypeChange();
+
+            document.getElementById('invoiceNum').value = record.invNum;
+            document.getElementById('invoiceDate').value = record.date;
+            document.getElementById('currency').value = record.currency;
+            document.getElementById('incoterm').value = record.incoterm;
+            document.getElementById('portLoading').value = record.portLoad;
+            document.getElementById('portDischarge').value = record.portDis;
+            document.getElementById('itemDesc').value = record.desc;
+            document.getElementById('itemUnit').value = record.unit;
+            document.getElementById('itemQty').value = record.qty;
+            document.getElementById('itemRate').value = record.rate;
+            
+            document.getElementById('editIndex').value = index;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteRecord(index) {
+            if (confirm("Are you sure you want to drop this logged track?")) {
+                dbRecords.splice(index, 1);
+                localStorage.setItem('ecc_billing_db', JSON.stringify(dbRecords));
+                renderTableRecords();
+            }
+        }
+
+        function downloadPrintDocument(index) {
+            const record = dbRecords[index];
+            const printWindow = window.open('', '_blank', 'width=950,height=850');
+            
+            let tableHeaderHTML = ``;
+            let tableBodyHTML = ``;
+            let dynamicLegalTermsHTML = ``;
+
+            if (record.type === "Packing List") {
+                const calculatedGross = (record.qty * 1.02).toFixed(2); 
+                tableHeaderHTML = `
+                    <tr>
+                        <th style="width: 50%;">Description of Export Commodities</th>
+                        <th class="text-right" style="width: 15%;">Unit Metric</th>
+                        <th class="text-right" style="width: 15%;">Net Weight</th>
+                        <th class="text-right" style="width: 20%;">Est. Gross Weight</th>
+                    </tr>`;
+                tableBodyHTML = `
+                    <tr>
+                        <td style="font-weight: 600;">${record.desc}</td>
+                        <td class="text-right">${record.unit}</td>
+                        <td class="text-right">${record.qty.toFixed(2)}</td>
+                        <td class="text-right">${calculatedGross}</td>
+                    </tr>`;
+                dynamicLegalTermsHTML = `
+                    <div class="terms-title">COMPULSORY PACKING & ROUTE DECLARATIONS</div>
+                    <div class="terms-item"><strong>1. Weight Certification:</strong> Net and Gross weights declared are verified accurate at shipping point execution scales before cargo terminal sealing.</div>
+                    <div class="terms-item"><strong>2. Packaging Structural Integrity:</strong> Goods are completely secured within export-grade custom bags designed to withstand pressure changes and high-humidity maritime container routing.</div>
+                    <div class="terms-item"><strong>3. Inspection Protocol:</strong> Subjected to official phytosanitary/fumigation checks wherever required prior to loading clearance windows.</div>`;
+            } else if (record.type === "Proforma Invoice") {
+                tableHeaderHTML = `
+                    <tr>
+                        <th style="width: 50%;">Description of Sourced Commodities</th>
+                        <th class="text-right" style="width: 15%;">Quantity / Unit</th>
+                        <th class="text-right" style="width: 15%;">Unit Rate</th>
+                        <th class="text-right" style="width: 20%;">Total Value</th>
+                    </tr>`;
+                tableBodyHTML = `
+                    <tr>
+                        <td style="font-weight: 600;">${record.desc}</td>
+                        <td class="text-right">${record.qty} ${record.unit}</td>
+                        <td class="text-right">${record.currency} ${record.rate.toFixed(2)}</td>
+                        <td class="text-right" style="font-weight: 700;">${record.currency} ${record.total.toFixed(2)}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="3" class="text-right">Estimated Cargo Total (${record.currency}):</td>
+                        <td class="text-right">${record.currency} ${record.total.toFixed(2)}</td>
+                    </tr>`;
+                dynamicLegalTermsHTML = `
+                    <div class="terms-title">PROFORMA SAFEST TRADE TERMS & CONDITIONS</div>
+                    <div class="terms-item"><strong>1. Price Validity Notice:</strong> Due to volatile agricultural market trends, rates quoted in this Proforma Invoice remain fixed strictly for 7 business days from document date.</div>
+                    <div class="terms-item"><strong>2. Allocation Advance:</strong> Material allocation and processing operations commence immediately upon receipt of confirmed advance payment structure.</div>
+                    <div class="terms-item"><strong>3. Document Standing:</strong> This is a preliminary Proforma draft estimation mapping order confirmations and is non-negotiable post irrevocable Letter of Credit execution blocks.</div>`;
+            } else { 
+                tableHeaderHTML = `
+                    <tr>
+                        <th style="width: 50%;">Description of Consigned Goods</th>
+                        <th class="text-right" style="width: 15%;">Quantity / Unit</th>
+                        <th class="text-right" style="width: 15%;">Unit Rate</th>
+                        <th class="text-right" style="width: 20%;">Final Value</th>
+                    </tr>`;
+                tableBodyHTML = `
+                    <tr>
+                        <td style="font-weight: 600;">${record.desc}</td>
+                        <td class="text-right">${record.qty} ${record.unit}</td>
+                        <td class="text-right">${record.currency} ${record.rate.toFixed(2)}</td>
+                        <td class="text-right" style="font-weight: 700;">${record.currency} ${record.total.toFixed(2)}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="3" class="text-right">Total Payable Balance (${record.currency}):</td>
+                        <td class="text-right">${record.currency} ${record.total.toFixed(2)}</td>
+                    </tr>`;
+                dynamicLegalTermsHTML = `
+                    <div class="terms-title">COMPULSORY LEGAL & BANK TELEGRAPHIC TERMS</div>
+                    <div class="terms-item"><strong>1. Payment Mandate:</strong> Payment must be executed via direct wire Telegraphic Transfer (T/T) or Letter of Credit matching specified bank coordinates explicitly.</div>
+                    <div class="terms-item"><strong>2. Late Remittance Penalities:</strong> Overdue balances outside the contract terms trigger a 1.5% late premium charge per month on pending values.</div>
+                    <div class="terms-item"><strong>3. Legal Settlement Framework:</strong> All cargo risks pass according to specified Incoterms. Any commercial disputes fall under exclusive domestic court jurisdictions at point of export origin.</div>`;
+            }
+
+            const htmlContent = `
+            <html>
+            <head>
+                <title>${record.type} - ${record.invNum}</title>
+                <style>
+                    body { font-family: 'Segoe UI', Arial, sans-serif; color: #1f2937; padding: 40px; margin: 0; background: #fff; }
+                    @page { size: A4; margin: 0; }
+                    @media print {
+                        body { padding: 20mm; font-size: 12px; }
+                        .no-print { display: none; }
+                    }
+                    .header-container { display: flex; justify-content: space-between; border-bottom: 3px solid #065f46; padding-bottom: 16px; margin-bottom: 24px; }
+                    .company-title { font-size: 24px; font-weight: 800; color: #064e3b; margin: 0; letter-spacing: 0.5px; }
+                    .company-subtitle { font-size: 11px; color: #4b5563; margin: 2px 0 0 0; font-weight: 600; text-transform: uppercase; }
+                    .company-contacts { font-size: 11px; color: #374151; margin: 6px 0 0 0; line-height: 1.4; }
+                    .doc-banner { text-align: right; }
+                    .doc-title { font-size: 20px; font-weight: 900; color: #374151; margin: 0; text-transform: uppercase; }
+                    .grid-2 { display: flex; gap: 20px; margin-bottom: 20px; }
+                    .address-card { flex: 1; border: 1px solid #e5e7eb; padding: 12px; border-radius: 6px; background-color: #f9fafb; }
+                    .card-label { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; }
+                    .card-name { font-size: 13px; font-weight: 700; color: #111827; margin: 0; }
+                    .card-desc { font-size: 11px; color: #4b5563; margin: 2px 0 0 0; line-height: 1.4; }
+                    .meta-strip { display: flex; justify-content: space-between; border: 1px solid #e5e7eb; background-color: #f9fafb; padding: 10px 16px; border-radius: 6px; margin-bottom: 24px; }
+                    .meta-item { font-size: 11px; }
+                    .meta-label { color: #6b7280; font-weight: 500; display: block; margin-bottom: 1px; }
+                    .meta-value { font-weight: 700; color: #111827; }
+                    .items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                    .items-table th { background-color: #f3f4f6; border-bottom: 2px solid #e5e7eb; padding: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #374151; text-align: left; }
+                    .items-table td { border-bottom: 1px solid #e5e7eb; padding: 12px 10px; font-size: 12px; color: #374151; }
+                    .text-right { text-align: right; }
+                    .total-row td { font-weight: 800; font-size: 13px; color: #064e3b; background-color: #f0fdf4; border-bottom: 2px solid #065f46; }
+                    .legal-terms-box { border: 1px dashed #cbd5e1; border-radius: 6px; padding: 14px; background-color: #fff; margin-top: 10px; page-break-inside: avoid; }
+                    .terms-title { font-size: 11px; font-weight: 800; color: #065f46; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+                    .terms-item { font-size: 10.5px; color: #475569; margin-bottom: 6px; line-height: 1.4; }
+                    .footer-signature-container { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 45px; page-break-inside: avoid; }
+                    .sys-note { font-size: 10px; color: #6b7280; line-height: 1.4; max-width: 50%; }
+                    .sig-box { text-align: center; border-top: 1px solid #9ca3af; padding-top: 6px; width: 220px; }
+                    .sig-company { font-size: 11px; font-weight: 700; color: #111827; margin-bottom: 40px; }
+                    .sig-title { font-size: 10px; color: #4b5563; margin: 0; }
+                </style>
+            </head>
+            <body>
+                <div class="header-container">
+                    <div>
+                        <h1 class="company-title">ELITE CROP CONNECT LLP</h1>
+                        <p class="company-subtitle">Exporter & Global Trade Partner</p>
+                        <p class="company-contacts">Email: info@elitecropconnect.com | Web: elitecropconnect.com</p>
+                    </div>
+                    <div class="doc-banner">
+                        <h2 class="doc-title">${record.type}</h2>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="address-card">
+                        <div class="card-label">Exporter / Seller:</div>
+                        <div class="card-name">ELITE CROP CONNECT LLP</div>
+                        <div class="card-desc">Agricultural Commodity Sourcing & Export Hub<br>Zaheerabad, Telangana, India</div>
+                    </div>
+                    <div class="address-card">
+                        <div class="card-label">Buyer / Consignee:</div>
+                        <div class="card-name">${record.company}</div>
+                    </div>
+                </div>
+
+                <div class="meta-strip">
+                    <div class="meta-item">
+                        <span class="meta-label">Reference No:</span>
+                        <span class="meta-value">${record.invNum}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Date:</span>
+                        <span class="meta-value">${record.date}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Incoterm Rule:</span>
+                        <span class="meta-value">${record.incoterm}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Transit Route:</span>
+                        <span class="meta-value">${record.portLoad} to ${record.portDis}</span>
+                    </div>
+                </div>
+
+                <table class="items-table">
+                    <thead>${tableHeaderHTML}</thead>
+                    <tbody>${tableBodyHTML}</tbody>
+                </table>
+
+                <div class="legal-terms-box">
+                    ${dynamicLegalTermsHTML}
+                </div>
+
+                <div class="footer-signature-container">
+                    <div class="sys-note">
+                        This document is issued by Elite Crop Connect LLP. All commodities are sourced, packaged, and exported under strict quality control compliance protocols.
+                    </div>
+                    <div class="sig-box">
+                        <div class="sig-company">For ELITE CROP CONNECT LLP</div>
+                        <p class="sig-title">(Authorized Signatory)</p>
+                    </div>
+                </div>
+
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        setTimeout(function() { window.close(); }, 500);
+                    };
+                <\/script>
+            </body>
+            </html>`;
+
+            printWindow.document.open();
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+        }
+
+        function resetFormWorkspace() {
+            document.getElementById('billingForm').reset();
+            document.getElementById('editIndex').value = "";
+            document.getElementById('documentType').value = "";
+            document.getElementById('dealingCompany').value = "";
+            document.getElementById('formWorkspace').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
